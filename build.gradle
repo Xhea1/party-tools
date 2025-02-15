@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'application'
+    id "com.github.ben-manes.versions" version "0.51.0"
+    id 'maven-publish'
+}
+
+group = 'com.github.xhea1'
+version = '0.1'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation 'com.google.guava:guava:33.4.0-jre'
+
+    implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.2'
+
+    api "org.jspecify:jspecify:1.0.0"
+
+    // Testing dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'Party Tools'
+                description = 'Java Tools for working with *.party services (kemono/coomer)'
+                url = 'https://github.com/Xhea1/party-tools'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/xhea1/party-tools"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+// dependency updates configuration:
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA', 'JRE'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
+    }
+}
