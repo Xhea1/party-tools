@@ -44,6 +44,7 @@ test {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = 'party-tools'
             pom {
                 name = 'Party Tools'
                 description = 'Java Tools for working with *.party services (kemono/coomer)'
