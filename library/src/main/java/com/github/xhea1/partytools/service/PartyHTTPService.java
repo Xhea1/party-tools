@@ -4,25 +4,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.xhea1.partytools.model.FileRecord;
 import com.github.xhea1.partytools.model.PostRecord;
+import com.github.xhea1.partytools.service.listener.DownloadListener;
 import com.google.common.base.Strings;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A service for making HTTP requests and dynamically parsing JSON responses.
- * This service is specifically designed to query the `/search_hash/{file_hash}` endpoint
- * and extract the `posts` data, excluding nested fields like `file` and `attachments`.
+ * A service for making HTTP requests and dynamically parsing JSON responses. This service is specifically designed to
+ * query the `/search_hash/{file_hash}` endpoint and extract the `posts` data, excluding nested fields like `file` and
+ * `attachments`.
  */
 @NullMarked
 public class PartyHTTPService {
@@ -36,7 +35,8 @@ public class PartyHTTPService {
     /**
      * Constructs an HTTPService with the specified base URL.
      *
-     * @param baseUrl The base URL for the API endpoint. Usually either {@code https://coomer.su/} or {@code https://kemono.su/}
+     * @param baseUrl The base URL for the API endpoint. Usually either {@code https://coomer.su/} or
+     *                {@code https://kemono.su/}
      */
     public PartyHTTPService(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -56,17 +56,14 @@ public class PartyHTTPService {
         for (JsonNode attachment : post.get("attachments")) {
             attachments.add(getFileRecord(attachment));
         }
-        return new PostRecord(
-                post.get("file_id").asInt(),
-                post.get("id").asText(),
-                post.get("user").asText(),
-                post.get("service").asText(),
-                post.get("title").asText(),
-                post.get("published").asText(),
-                post.get("substring").asText(),
-                file,
-                attachments
-        );
+        return new PostRecord(post.get("file_id")
+                                      .asInt(), post.get("id")
+                                      .asText(), post.get("user")
+                                      .asText(), post.get("service")
+                                      .asText(), post.get("title")
+                                      .asText(), post.get("published")
+                                      .asText(), post.get("substring")
+                                      .asText(), file, attachments);
     }
 
     /**
@@ -74,7 +71,9 @@ public class PartyHTTPService {
      * @return {@link FileRecord}
      */
     private FileRecord getFileRecord(JsonNode fileNode) {
-        return new FileRecord(fileNode.get("name").asText(), fileNode.get("path").asText());
+        return new FileRecord(fileNode.get("name")
+                                      .asText(), fileNode.get("path")
+                                      .asText());
     }
 
     /**
@@ -104,11 +103,14 @@ public class PartyHTTPService {
      */
     private List<PostRecord> executeQueryForPosts(String url) throws IOException {
         // Create HTTP GET request
-        Request request = new Request.Builder().url(url).build();
+        Request request = new Request.Builder().url(url)
+                .build();
         List<PostRecord> postRecords = new ArrayList<>();
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = client.newCall(request)
+                .execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                String jsonResponse = response.body().string();
+                String jsonResponse = response.body()
+                        .string();
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
                 // Extract `posts` array
@@ -127,7 +129,8 @@ public class PartyHTTPService {
     /**
      * Get all posts of the given user.
      *
-     * @param service   service to fetch data from. Values include {@code fansly}, {@code onlyfans}, {@code patreon} and others.
+     * @param service   service to fetch data from. Values include {@code fansly}, {@code onlyfans}, {@code patreon} and
+     *                  others.
      * @param creatorId the ID of the creator
      * @return @return A list of {@link PostRecord} containing all found posts.
      * @throws IOException If the request fails or the response is invalid.
@@ -146,20 +149,22 @@ public class PartyHTTPService {
     /**
      * Download the given files.
      *
-     * @param records files to download
-     * @param downloadDir directory to download to
+     * @param records                files to download
+     * @param downloadDir            directory to download to
      * @param maxConcurrentDownloads maximum amount of concurrent downloads
      */
-    public void downloadFiles(Set<FileRecord> records, Path downloadDir, int maxConcurrentDownloads) {
-        try (var service = new FileDownloadService(maxConcurrentDownloads)) {
-          var download=  service.downloadFiles(
-                    records.stream().collect(Collectors.toMap(fileRecord -> createDownloadUrl(fileRecord.path()), FileRecord::name)), downloadDir);
-          download.join();
+    public void downloadFiles(Collection<FileRecord> records, Path downloadDir, int maxConcurrentDownloads, @Nullable DownloadListener listener) {
+        try (var service = new FileDownloadService(maxConcurrentDownloads, listener)) {
+            var download = service.downloadFiles(records.stream()
+                                                         .collect(Collectors.toMap(
+                                                                 fileRecord -> createDownloadUrl(fileRecord.path()),
+                                                                 FileRecord::name)), downloadDir);
+            download.join();
         }
     }
 
     /**
-     *  Create the URL for a download
+     * Create the URL for a download
      */
     private String createDownloadUrl(String path) {
         return baseUrl + DOWNLOAD_SUBPATH + path;

@@ -1,0 +1,70 @@
+plugins {
+    id 'application'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
+}
+
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "apache-snapshots"
+                url = "https://repository.apache.org/snapshots/"
+            }
+        }
+        filter {
+            // this repository *only* contains artifacts with group "com.github.xhea1"
+            includeGroup 'org.apache.logging.log4j'
+        }
+    }
+}
+
+
+
+dependencies {
+    implementation project(':library')
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation 'com.google.guava:guava:33.4.6-jre'
+
+    // snapshot is required for graal vm support
+    implementation 'org.apache.logging.log4j:log4j-core:2.25.0-SNAPSHOT'
+
+    implementation 'info.picocli:picocli:4.7.6'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.6'
+
+    implementation 'me.tongfei:progressbar:0.10.1'
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'com.github.xhea1.party.app.Party'
+}
+
+graalvmNative {
+    toolchainDetection = true
+    binaries {
+        configureEach {
+            javaLauncher = javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(21)
+                vendor = JvmVendorSpec.GRAAL_VM
+            }
+            buildArgs.add("-H:IncludeResourceBundles=Log4j-core")
+            buildArgs.add("--strict-image-heap")
+            buildArgs.add("-march=native")
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        vendor = JvmVendorSpec.GRAAL_VM
+        // TODO: re-enable once i figure out how to use it
+        //nativeImageCapable = true
+    }
+}
+
+tasks.named('assemble').configure {
+    dependsOn 'nativeCompile'
+}

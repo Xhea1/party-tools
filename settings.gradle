@@ -3,4 +3,4 @@ plugins {
 }
 
 rootProject.name = 'party-tools'
-
+include('app', 'library')

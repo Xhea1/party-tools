@@ -1,30 +1,49 @@
 package com.github.xhea1.partytools.service;
 
+import com.github.xhea1.partytools.service.listener.DownloadListener;
 import okhttp3.*;
 import okio.BufferedSink;
 import okio.Okio;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.*;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
  * Service class for downloading files with a limit for the amount of concurrent downloads.
  */
-class FileDownloadService implements AutoCloseable{
+@NullMarked
+class FileDownloadService implements AutoCloseable {
     private final OkHttpClient client;
     private final ExecutorService executor;
+    private final DownloadListener listener;
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final DownloadListener NO_OP_LISTENER = new DownloadListener() {
+        @Override
+        public void onFailure(String url, Path outputPath) {
+            // no op
+        }
+
+        @Override
+        public void onSuccess(String url, Path outputPath) {
+           // no op
+        }
+    };
 
     /**
      *
      * @param maxConcurrentDownloads maximum amount of concurrent downloads
+     * @param listener optional listener for download events
      */
-    FileDownloadService(int maxConcurrentDownloads) {
+    FileDownloadService(int maxConcurrentDownloads, @Nullable DownloadListener listener) {
+        this.listener = Optional.ofNullable(listener).orElse(NO_OP_LISTENER);
         this.client = new OkHttpClient();
         this.executor = Executors.newFixedThreadPool(maxConcurrentDownloads);
     }
@@ -51,8 +70,10 @@ class FileDownloadService implements AutoCloseable{
                     sink.writeAll(Okio.source(inputStream));
                 }
 
+                listener.onSuccess(url, outputPath);
                 return outputPath;
             } catch (IOException e) {
+                listener.onFailure(url, outputPath);
                 throw new CompletionException(e);
             }
         }, executor);
