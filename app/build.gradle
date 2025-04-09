@@ -19,6 +19,13 @@ repositories {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        vendor = JvmVendorSpec.GRAAL_VM
+    }
+}
+
 
 
 dependencies {
@@ -42,7 +49,8 @@ application {
 }
 
 graalvmNative {
-    toolchainDetection = true
+    // TODO: disabled, because the native-iamge tool provisioned with the JVM is not executable
+    toolchainDetection = false
     binaries {
         configureEach {
             javaLauncher = javaToolchains.launcherFor {
