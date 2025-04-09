@@ -49,7 +49,7 @@ graalvmNative {
                 languageVersion = JavaLanguageVersion.of(21)
                 vendor = JvmVendorSpec.GRAAL_VM
             }
-            buildArgs.add("-H:IncludeResourceBundles=Log4j-core")
+            imageName = 'party'
             buildArgs.add("--strict-image-heap")
             buildArgs.add("-march=native")
         }
