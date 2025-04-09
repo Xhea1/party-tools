@@ -31,6 +31,7 @@ class Party {
         System.exit(exitCode);
     }
 
+    @SuppressWarnings("unused")
     enum Site {
         COOMER("https://coomer.su/"), KEMONO("https://kemono.su/");
 
