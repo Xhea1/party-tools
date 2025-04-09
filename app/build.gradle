@@ -19,15 +19,6 @@ repositories {
     }
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-        vendor = JvmVendorSpec.GRAAL_VM
-    }
-}
-
-
-
 dependencies {
     implementation project(':library')
 
@@ -49,14 +40,10 @@ application {
 }
 
 graalvmNative {
-    // TODO: disabled, because the native-iamge tool provisioned with the JVM is not executable
+    // TODO: disabled, because the native-image tool provisioned with the JVM is not executable
     toolchainDetection = false
     binaries {
         configureEach {
-            javaLauncher = javaToolchains.launcherFor {
-                languageVersion = JavaLanguageVersion.of(21)
-                vendor = JvmVendorSpec.GRAAL_VM
-            }
             imageName = 'party'
             buildArgs.add("--strict-image-heap")
             buildArgs.add("-march=native")
