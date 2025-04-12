@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.github.xhea1'
-version = '0.1'
+version = '0.2-alpha2'
 
 tasks.withType(Javadoc).configureEach {
     options.failOnError = false
