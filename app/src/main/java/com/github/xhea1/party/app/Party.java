@@ -1,9 +1,12 @@
 package com.github.xhea1.party.app;
 
 import com.github.xhea1.party.app.listener.ProgressBarListener;
+import com.github.xhea1.party.app.util.TableFormatter;
+import com.github.xhea1.partytools.model.CreatorRecord;
 import com.github.xhea1.partytools.model.FileRecord;
 import com.github.xhea1.partytools.model.PostRecord;
 import com.github.xhea1.partytools.service.PartyHTTPService;
+import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
@@ -14,15 +17,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 /**
  * Party commandline app.
  */
 @NullMarked
 @CommandLine.Command(name = "party", description = "Tool for interacting with party services.",
-                     mixinStandardHelpOptions = true, version = "0.1", subcommands = {Party.PartyDownload.class})
+                     mixinStandardHelpOptions = true, version = "0.1", subcommands = {Party.PartyDownload.class, Party.PartySearch.class})
 class Party {
 
+    @SuppressWarnings("InstantiationOfUtilityClass")
     public static void main(String[] args) {
         CommandLine commandLine = new CommandLine(new Party());
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
@@ -50,7 +55,7 @@ class Party {
 
         private static final Logger LOGGER = LogManager.getLogger();
 
-        @CommandLine.Option(names = "-creator", required = true, description = "Name or id of the creator to download.")
+        @CommandLine.Option(names = "-creator", required = true, description = "ID of the creator to download.")
         String creator;
 
         @CommandLine.Option(names = "-site", required = true,
@@ -97,6 +102,42 @@ class Party {
                 LOGGER.error("Error during download: ", e);
                 return 1;
             }
+        }
+    }
+
+    @CommandLine.Command(name = "search", description = "Search for a creator.")
+    static class PartySearch implements Callable<Integer> {
+
+        private static final Logger LOGGER = LogManager.getLogger();
+
+        @CommandLine.Option(names = "-creator", required = true, description = "Name of the creator to search for.")
+        String creator;
+
+        @CommandLine.Option(names = "-site", required = true,
+                            description = "Site to download from. Available choices: ${COMPLETION-CANDIDATES}")
+        Site site;
+
+        @CommandLine.Option(names = "-service",
+                            description = "Optionally filter creators by service, e.g. fansly, onlyfans, patreon, discord, etc.")
+        String service;
+
+        @Override
+        public Integer call() throws Exception {
+            PartyHTTPService partyHTTPService = new PartyHTTPService(site.baseUrl);
+            Set<CreatorRecord> creators = partyHTTPService.getCreators();
+            if (!Strings.isNullOrEmpty(service)) {
+                creators = creators.stream()
+                        .filter(c -> c.service().equalsIgnoreCase(service))
+                        .collect(Collectors.toSet());
+            }
+            creators = creators.stream()
+                    .filter(c -> c.name().equalsIgnoreCase(creator))
+                    .collect(Collectors.toSet());
+            LOGGER.info("Found {} creators: ", creators.size());
+            if(!creators.isEmpty()) {
+                LOGGER.info("\n" + TableFormatter.formatCreators(creators));
+            }
+            return 0;
         }
     }
 }
