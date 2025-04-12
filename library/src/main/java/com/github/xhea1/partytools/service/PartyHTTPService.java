@@ -2,6 +2,7 @@ package com.github.xhea1.partytools.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.xhea1.partytools.model.CreatorRecord;
 import com.github.xhea1.partytools.model.FileRecord;
 import com.github.xhea1.partytools.model.PostRecord;
 import com.github.xhea1.partytools.service.listener.DownloadListener;
@@ -9,12 +10,13 @@ import com.google.common.base.Strings;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -153,7 +155,8 @@ public class PartyHTTPService {
      * @param downloadDir            directory to download to
      * @param maxConcurrentDownloads maximum amount of concurrent downloads
      */
-    public void downloadFiles(Collection<FileRecord> records, Path downloadDir, int maxConcurrentDownloads, @Nullable DownloadListener listener) {
+    public void downloadFiles(Collection<FileRecord> records, Path downloadDir, int maxConcurrentDownloads,
+                              @Nullable DownloadListener listener) {
         try (var service = new FileDownloadService(maxConcurrentDownloads, listener)) {
             var download = service.downloadFiles(records.stream()
                                                          .collect(Collectors.toMap(
@@ -161,6 +164,38 @@ public class PartyHTTPService {
                                                                  FileRecord::name)), downloadDir);
             download.join();
         }
+    }
+
+    /**
+     * Get all currently saved creators.
+     *
+     * @return Set of all creators known as {@link CreatorRecord}
+     * @throws IOException If the request fails or the response is invalid.
+     */
+    public Set<CreatorRecord> getCreators() throws IOException {
+        Set<CreatorRecord> creators = new HashSet<>();
+        Request request = new Request.Builder().url(baseUrl + API_SUBPATH + "/creators.txt")
+                .build();
+        try (Response response = client.newCall(request)
+                .execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String jsonResponse = response.body()
+                        .string();
+                JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+                if (rootNode != null && rootNode.isArray()) {
+                    for (JsonNode creator : rootNode) {
+                        creators.add(new CreatorRecord(creator.get("id")
+                                                               .asText(), creator.get("name")
+                                                               .asText(), creator.get("service")
+                                                               .asText(), Instant.ofEpochSecond(creator.get("updated")
+                                                                                                        .asLong())));
+                    }
+                }
+            }
+        }
+
+        return creators;
     }
 
     /**

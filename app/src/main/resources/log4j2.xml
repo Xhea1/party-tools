@@ -5,7 +5,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
                 <!-- Log format: timestamp, level, logger name, message -->
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</Pattern>
+                <Pattern>%-5level %msg%n</Pattern>
             </PatternLayout>
         </Console>
     </Appenders>
