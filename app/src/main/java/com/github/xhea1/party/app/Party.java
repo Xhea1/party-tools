@@ -74,7 +74,7 @@ class Party {
         int maxConcurrentDownloads = 5;
 
         @Override
-        public Integer call() throws Exception {
+        public Integer call() {
             PartyHTTPService partyHTTPService = new PartyHTTPService(site.baseUrl);
             LOGGER.info("Downloading posts from user {} for service {}...", creator, site.name());
             try {
@@ -87,8 +87,8 @@ class Party {
                 });
                 int size = filesToDownload.size();
                 LOGGER.info("Found {} posts with {} files.", postsForUser.size(), size);
-                int successfulDownloads = 0;
-                int failedDownloads = 0;
+                int successfulDownloads;
+                int failedDownloads;
                 try(ProgressBarListener listener = new ProgressBarListener(size)) {
                     partyHTTPService.downloadFiles(filesToDownload, outputDir, maxConcurrentDownloads, listener);
                     successfulDownloads = listener.getSuccessCount();
