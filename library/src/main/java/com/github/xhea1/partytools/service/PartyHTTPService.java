@@ -58,14 +58,13 @@ public class PartyHTTPService {
         for (JsonNode attachment : post.get("attachments")) {
             attachments.add(getFileRecord(attachment));
         }
-        return new PostRecord(post.get("file_id")
-                                      .asInt(), post.get("id")
-                                      .asText(), post.get("user")
+        JsonNode fileId = post.get("file_id");
+        return new PostRecord(fileId != null ? OptionalInt.of(fileId.asInt()) : OptionalInt.empty(), post.get("id")
+                .asText(), post.get("user")
                                       .asText(), post.get("service")
                                       .asText(), post.get("title")
                                       .asText(), post.get("published")
-                                      .asText(), post.get("substring")
-                                      .asText(), file, attachments);
+                                      .asText(), Optional.ofNullable(post.get("substring")).map(JsonNode::asText), file, attachments);
     }
 
     /**
@@ -115,8 +114,11 @@ public class PartyHTTPService {
                         .string();
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
-                // Extract `posts` array
-                JsonNode posts = rootNode.get("posts");
+                // Extract `posts` array if it exists in the response
+                JsonNode posts = rootNode;
+                if (rootNode.has(("posts"))) {
+                    posts = rootNode.get("posts");
+                }
                 if (posts != null && posts.isArray()) {
                     for (JsonNode post : posts) {
                         PostRecord postRecord = getPostRecord(post);
@@ -144,7 +146,7 @@ public class PartyHTTPService {
         if (Strings.isNullOrEmpty(creatorId)) {
             throw new IllegalArgumentException("creatorId must not be null");
         }
-        String url = baseUrl + API_SUBPATH + service + "/user/" + creatorId;
+        String url = "%s%s/%s/user/%s".formatted(baseUrl, API_SUBPATH, service, creatorId);
         return executeQueryForPosts(url);
     }
 

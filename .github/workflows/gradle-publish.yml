@@ -37,11 +37,11 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Upload native image
-      uses: actions/upload-artifact@v4
+    - name: Upload binary to release
+      uses: softprops/action-gh-release@v2
       with:
-        name: party-${{ matrix.os }}
-        path: app/build/native/nativeCompile/party*
+        tag_name: ${{ github.ref_name }}
+        files: app/build/native/nativeCompile/party*
 
   build-library:
 

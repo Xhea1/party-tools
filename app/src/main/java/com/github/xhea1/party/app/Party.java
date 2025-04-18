@@ -50,7 +50,7 @@ class Party {
     /**
      * Download subcommand
      */
-    @CommandLine.Command(name = "download")
+    @CommandLine.Command(name = "download", description = "Download all posts of a creator.")
     static class PartyDownload implements Callable<Integer> {
 
         private static final Logger LOGGER = LogManager.getLogger();
@@ -76,7 +76,7 @@ class Party {
         @Override
         public Integer call() {
             PartyHTTPService partyHTTPService = new PartyHTTPService(site.baseUrl);
-            LOGGER.info("Downloading posts from user {} for service {}...", creator, site.name());
+            LOGGER.info("Downloading {} posts from user {} for service {}...", service, creator, site.name());
             try {
                 List<PostRecord> postsForUser = partyHTTPService.getPostsForUser(service, creator);
                 Set<FileRecord> filesToDownload = HashSet.newHashSet(postsForUser.size());
@@ -135,7 +135,7 @@ class Party {
                     .collect(Collectors.toSet());
             LOGGER.info("Found {} creators: ", creators.size());
             if(!creators.isEmpty()) {
-                LOGGER.info("\n" + TableFormatter.formatCreators(creators));
+                LOGGER.info("\n{}" , TableFormatter.formatCreators(creators));
             }
             return 0;
         }
