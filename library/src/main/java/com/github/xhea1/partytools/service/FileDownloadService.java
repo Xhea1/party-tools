@@ -13,7 +13,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 /**
@@ -43,7 +43,7 @@ class FileDownloadService implements AutoCloseable {
      * @param listener optional listener for download events
      */
     FileDownloadService(int maxConcurrentDownloads, @Nullable DownloadListener listener) {
-        this.listener = Optional.ofNullable(listener).orElse(NO_OP_LISTENER);
+        this.listener = Objects.requireNonNullElse(listener, NO_OP_LISTENER);
         this.client = new OkHttpClient();
         this.executor = Executors.newFixedThreadPool(maxConcurrentDownloads);
     }

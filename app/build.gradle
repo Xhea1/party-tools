@@ -44,7 +44,7 @@ graalvmNative {
     toolchainDetection = false
     binaries {
         configureEach {
-            imageName = 'party'
+            imageName = "party-$rootProject.version"
             buildArgs.add("--strict-image-heap")
             buildArgs.add("-march=native")
         }
