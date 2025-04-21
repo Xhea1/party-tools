@@ -23,7 +23,7 @@ dependencies {
     implementation project(':library')
 
     // https://mvnrepository.com/artifact/com.google.guava/guava
-    implementation 'com.google.guava:guava:33.4.7-jre'
+    implementation 'com.google.guava:guava:33.4.8-jre'
 
     // snapshot is required for graal vm support
     implementation 'org.apache.logging.log4j:log4j-core:2.25.0-SNAPSHOT'
