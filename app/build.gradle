@@ -28,8 +28,8 @@ dependencies {
     // snapshot is required for graal vm support
     implementation 'org.apache.logging.log4j:log4j-core:2.25.0-SNAPSHOT'
 
-    implementation 'info.picocli:picocli:4.7.6'
-    annotationProcessor 'info.picocli:picocli-codegen:4.7.6'
+    implementation 'info.picocli:picocli:4.7.7'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.7'
 
     implementation 'me.tongfei:progressbar:0.10.1'
 }
