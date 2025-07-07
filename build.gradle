@@ -2,8 +2,10 @@ plugins {
     id("org.barfuin.gradle.taskinfo") version "2.2.0"
 }
 
-group = 'com.github.xhea1'
-version = '0.2-alpha3'
+allprojects {
+    group = 'com.github.xhea1'
+    version = '0.2-alpha5'
+}
 
 tasks.withType(Javadoc).configureEach {
     options.failOnError = false
