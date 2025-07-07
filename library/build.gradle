@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'java-library'
     id 'application'
-    id "com.github.ben-manes.versions" version "0.52.0"
     id 'maven-publish'
 }
 
@@ -72,19 +71,5 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
-    }
-}
-
-// dependency updates configuration:
-def isNonStable = { String version ->
-    def stableKeyword = ['RELEASE', 'FINAL', 'GA', 'JRE'].any { it -> version.toUpperCase().contains(it) }
-    def regex = /^[0-9,.v-]+(-r)?$/
-    return !stableKeyword && !(version ==~ regex)
-}
-
-// https://github.com/ben-manes/gradle-versions-plugin
-tasks.named("dependencyUpdates").configure {
-    rejectVersionIf {
-        isNonStable(it.candidate.version)
     }
 }
