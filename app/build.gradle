@@ -1,6 +1,7 @@
 plugins {
     id 'application'
     id 'org.graalvm.buildtools.native' version '0.10.6'
+    id "com.google.osdetector" version "1.7.3"
 }
 
 repositories {
@@ -31,7 +32,7 @@ graalvmNative {
     toolchainDetection = false
     binaries {
         configureEach {
-            imageName = "party-$rootProject.version"
+            imageName = "party-$osdetector.classifier-$rootProject.version"
             buildArgs.add("--strict-image-heap")
             buildArgs.add("-march=native")
         }
