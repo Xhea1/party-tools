@@ -26,6 +26,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    # Conditional step to set GRADLE_USER_HOME for Windows runners
+    # This ensures Gradle's cache and other files are on the D: drive,
+    # which is typically where the GITHUB_WORKSPACE is located on Windows runners,
+    # preventing "different root" errors with GraalVM Native Image.
+    - name: Configure GRADLE_USER_HOME for Windows
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        $env:GRADLE_USER_HOME = "D:\.gradle"
+        # Create the directory if it doesn't exist
+        mkdir -Force $env:GRADLE_USER_HOME
+        Write-Host "GRADLE_USER_HOME set to: $($env:GRADLE_USER_HOME)"
+      env:
+        # Pass GITHUB_WORKSPACE to PowerShell to ensure it's available
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+
     - name: Set up GraalVM for JDK 21
       uses: graalvm/setup-graalvm@v1
       with:
