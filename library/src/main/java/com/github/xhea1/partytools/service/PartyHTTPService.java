@@ -109,7 +109,7 @@ public class PartyHTTPService {
         List<PostRecord> postRecords = new ArrayList<>();
         try (Response response = client.newCall(request)
                 .execute()) {
-            if (response.isSuccessful() && response.body() != null) {
+            if (response.isSuccessful()) {
                 String jsonResponse = response.body()
                         .string();
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);

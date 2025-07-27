@@ -64,7 +64,6 @@ class FileDownloadService implements AutoCloseable {
                     throw new IOException("Failed to download file: " + url + " - " + response);
                 }
 
-                assert response.body() != null;
                 try (BufferedSink sink = Okio.buffer(Okio.sink(outputPath));
                      InputStream inputStream = response.body().byteStream()) {
                     sink.writeAll(Okio.source(inputStream));
@@ -74,7 +73,7 @@ class FileDownloadService implements AutoCloseable {
                 return outputPath;
             } catch (IOException e) {
                 listener.onFailure(url, outputPath);
-                throw new CompletionException(e);
+                throw new CompletionException("Failed to download from URL " + url + " to " + outputPath, e);
             }
         }, executor);
     }
