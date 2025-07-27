@@ -10,3 +10,10 @@ allprojects {
 tasks.withType(Javadoc).configureEach {
     options.failOnError = false
 }
+
+develocity {
+    buildScan {
+        termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+        termsOfUseAgree = "yes"
+    }
+}
