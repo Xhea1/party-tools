@@ -38,7 +38,7 @@ class Party {
 
     @SuppressWarnings("unused")
     enum Site {
-        COOMER("https://coomer.su/"), KEMONO("https://kemono.su/");
+        COOMER("https://coomer.party/"), KEMONO("https://kemono.party/");
 
         private final String baseUrl;
 
