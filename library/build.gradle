@@ -36,7 +36,7 @@ dependencies {
     api "org.jspecify:jspecify:1.0.0"
 
     // Testing dependencies
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.0'
 }
 
 test {
