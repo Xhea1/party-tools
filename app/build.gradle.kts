@@ -33,12 +33,16 @@ application {
 graalvmNative {
     toolchainDetection = true
     binaries {
-        configureEach {
-            imageName = "party-$osdetector.classifier-$rootProject.version"
+        named("main") {
+            imageName = "party-${osdetector.classifier}-${rootProject.version}"
             buildArgs.add("--strict-image-heap")
             buildArgs.add("-march=native")
             buildArgs.add("--static")
             buildArgs.add("--libc=musl")
+            javaLauncher.set(javaToolchains.launcherFor {
+                languageVersion.set(JavaLanguageVersion.of(21))
+                vendor.set(JvmVendorSpec.GRAAL_VM)
+            })
         }
     }
 }
