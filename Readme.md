@@ -28,6 +28,6 @@ repositories {
 
 dependencies {
     // party tools
-    implementation 'com.github.xhea1:party-tools:v0.1'
+    implementation 'com.github.xhea1:party-tools:0.3.0'
 }
 ````
