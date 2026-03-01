@@ -64,7 +64,8 @@ jobs:
       uses: graalvm/setup-graalvm@v1
       with:
         java-version: '21'
-        distribution: 'graalvm'
+        distribution: 'graalvm-community'
+        native-image-musl: 'true'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         native-image-job-reports: 'true'
     - name: Setup Gradle

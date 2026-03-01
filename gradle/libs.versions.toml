@@ -1,0 +1,31 @@
+[versions]
+guava = "33.5.0-jre"
+log4j = "2.25.3"
+picocli = "4.7.7"
+progressbar = "0.10.2"
+nativeBuildtools = "0.11.4"
+osdetector = "1.7.3"
+jacksonDatabind = "2.21.1"
+jacksonAnnotations = "2.21"
+okhttp = "5.3.2"
+jspecify = "1.0.0"
+junit = "6.0.3"
+
+[libraries]
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+picocli-picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
+progressbar = { module = "me.tongfei:progressbar", version.ref = "progressbar" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jacksonAnnotations" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+[bundles]
+jackson = ["jackson-databind", "jackson-annotations"]
+
+[plugins]
+nativeBuildtools = { id = "org.graalvm.buildtools.native", version.ref = "nativeBuildtools" }
+osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
