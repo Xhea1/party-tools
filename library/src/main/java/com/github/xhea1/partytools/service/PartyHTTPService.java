@@ -10,7 +10,8 @@ import com.google.common.base.Strings;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
  */
 @NullMarked
 public class PartyHTTPService {
+    private static final Logger LOGGER = LogManager
+            .getLogger();
+
     private static final String DOWNLOAD_SUBPATH = "/data/";
     private static final String API_SUBPATH = "api/v1";
     private final OkHttpClient client = new OkHttpClient();
@@ -64,7 +68,8 @@ public class PartyHTTPService {
                                       .asText(), post.get("service")
                                       .asText(), post.get("title")
                                       .asText(), post.get("published")
-                                      .asText(), Optional.ofNullable(post.get("substring")).map(JsonNode::asText), file, attachments);
+                                      .asText(), Optional.ofNullable(post.get("substring"))
+                                      .map(JsonNode::asText), file, attachments);
     }
 
     /**
@@ -85,7 +90,7 @@ public class PartyHTTPService {
      * @throws IOException If the request fails or the response is invalid.
      * @implNote Retrieves the `posts` data from the `/search_hash/{file_hash}` endpoint.
      */
-    @NotNull
+
     public List<PostRecord> getPostsByHash(String fileHash) throws IOException {
         if (Strings.isNullOrEmpty(fileHash)) {
             throw new IllegalArgumentException("fileHash must not be null");
@@ -104,6 +109,9 @@ public class PartyHTTPService {
      */
     private List<PostRecord> executeQueryForPosts(String url) throws IOException {
         // Create HTTP GET request
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Executing query for url: {}", url);
+        }
         Request request = new Request.Builder().url(url)
                 .build();
         List<PostRecord> postRecords = new ArrayList<>();
@@ -125,6 +133,8 @@ public class PartyHTTPService {
                         postRecords.add(postRecord);
                     }
                 }
+            } else {
+                LOGGER.error("Request was unsuccessfull: {}: {}", response.code(), response.message());
             }
         }
         return postRecords;
