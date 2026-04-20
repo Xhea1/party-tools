@@ -1,5 +1,5 @@
 [versions]
-guava = "33.5.0-jre"
+guava = "33.6.0-jre"
 log4j = "2.25.3"
 picocli = "4.7.7"
 progressbar = "0.10.2"
