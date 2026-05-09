@@ -26,11 +26,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up GraalVM for JDK 21
+    - name: Set up GraalVM for JDK 25
       uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '21'
+        java-version: '25'
         distribution: 'graalvm-community'
+        version: 'latest'
         native-image-musl: 'true'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         native-image-job-reports: 'true'
@@ -42,6 +43,12 @@ jobs:
         echo "GRADLE_USER_HOME=$env:GITHUB_WORKSPACE\.gradle" >> $env:GITHUB_ENV
         echo "JAVA_TOOL_OPTIONS=-Djava.io.tmpdir=$env:GITHUB_WORKSPACE\temp" >> $env:GITHUB_ENV
         New-Item -ItemType Directory -Force -Path "$env:GITHUB_WORKSPACE\temp"   
+
+    - name: Install Visual Studio Build Tools (Windows)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
 
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md

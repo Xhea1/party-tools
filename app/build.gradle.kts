@@ -34,13 +34,18 @@ graalvmNative {
     toolchainDetection = true
     binaries {
         named("main") {
+            val isLinux = osdetector.os.contains("linux")
             imageName = "party-${osdetector.classifier}-${rootProject.version}"
-            buildArgs.add("--strict-image-heap")
             buildArgs.add("-march=native")
-            buildArgs.add("--static")
-            buildArgs.add("--libc=musl")
+            if (isLinux) {
+                buildArgs.add("--static")
+                buildArgs.add("--libc=musl")
+                imageName = "party-static-${rootProject.version}"
+            } else {
+                logger.info("Skipping static/native-image flags on non-Linux (${osdetector.classifier}).")
+            }
             javaLauncher.set(javaToolchains.launcherFor {
-                languageVersion.set(JavaLanguageVersion.of(21))
+                languageVersion.set(JavaLanguageVersion.of(25))
                 vendor.set(JvmVendorSpec.GRAAL_VM)
             })
         }
@@ -91,6 +96,11 @@ tasks.named<BuildNativeImageTask>("nativeCompile") {
     }
 }
 
+val isLinuxBuild = osdetector.classifier.contains("linux")
 tasks.named("assemble").configure {
-    dependsOn("nativeCompile")
+    if (isLinuxBuild) {
+        dependsOn("nativeCompile")
+    } else {
+        logger.quiet("assemble will not depend on nativeCompile on non-Linux (${osdetector.classifier}).")
+    }
 }
