@@ -32,7 +32,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-musl: 'true'
           native-image-job-reports: 'true'
-          native-image-enable-sbom: 'true'
 
     - name: Normalize paths for GraalVM (Windows)
       if: runner.os == 'Windows'
