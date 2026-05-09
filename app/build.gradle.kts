@@ -96,11 +96,6 @@ tasks.named<BuildNativeImageTask>("nativeCompile") {
     }
 }
 
-val isLinuxBuild = osdetector.classifier.contains("linux")
 tasks.named("assemble").configure {
-    if (isLinuxBuild) {
-        dependsOn("nativeCompile")
-    } else {
-        logger.quiet("assemble will not depend on nativeCompile on non-Linux (${osdetector.classifier}).")
-    }
+    dependsOn("nativeCompile")
 }
