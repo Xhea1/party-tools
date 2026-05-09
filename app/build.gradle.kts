@@ -40,7 +40,7 @@ graalvmNative {
             buildArgs.add("--static")
             buildArgs.add("--libc=musl")
             javaLauncher.set(javaToolchains.launcherFor {
-                languageVersion.set(JavaLanguageVersion.of(21))
+                languageVersion.set(JavaLanguageVersion.of(25))
                 vendor.set(JvmVendorSpec.GRAAL_VM)
             })
         }

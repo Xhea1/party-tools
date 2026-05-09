@@ -26,10 +26,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up GraalVM for JDK 21
+    - name: Set up GraalVM for JDK 25
       uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '21'
+        java-version: '25'
         distribution: 'graalvm-community'
         version: 'latest'
         native-image-musl: 'true'
