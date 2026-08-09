@@ -9,7 +9,7 @@ jacksonDatabind = "2.21.2"
 jacksonAnnotations = "2.21"
 okhttp = "5.3.2"
 jspecify = "1.0.0"
-junit = "6.0.3"
+junit = "6.1.2"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
