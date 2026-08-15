@@ -7,7 +7,7 @@ nativeBuildtools = "1.1.7"
 osdetector = "1.7.3"
 jacksonDatabind = "2.22.1"
 jacksonAnnotations = "2.22"
-okhttp = "5.3.2"
+okhttp = "5.4.0"
 jspecify = "1.0.0"
 junit = "6.0.3"
 
